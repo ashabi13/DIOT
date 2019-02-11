@@ -1,11 +1,14 @@
 // This #include statement was automatically added by the Particle IDE.
 #include <neopixel.h>
 
+// This #include statement was automatically added by the Particle IDE.
+#include <neopixel.h>
+
 // This value will store the last time we published an event
 long lastPublishedAt = 0;
 // this is the time delay before we should publish a new event
 // from this device
-int publishAfter = 10000;
+int publishAfter = 1000;
 //setpins
 int solPin = D2;
 int butPin = D8;
@@ -23,16 +26,12 @@ void setup()
 
   // From the Particle Docs
   // A subscription works like a prefix filter.
-  // If you subscribe to "foo", you will receive any event
-  // whose name begins with "foo", including "foo", "fool",
-  // "foobar", and "food/indian/sweet-curry-beans".
 
   // Basically this will match any event that starts with 'db2018/paired/'
   // This is a feature we'll useto figure out if our event comes from
   // this device or another (see publishMyEvent below)
-  Particle.subscribe(  "ChenMutiatLama/2019/Group4/", handleSharedEvent );
   //Subscribe to a set of events published when an IFTTT widget is triggered by a tweet
-  Particle.subscribe(  "LamaAlFulaij", mexicanFlag );
+  Particle.subscribe(  "ChenMutiatLama/2019/Group4/LamaAlFulaij", mexicanFlag );
   pinMode(solPin, OUTPUT);
   pinMode(butPin, INPUT_PULLUP);  
   ring.begin();
@@ -91,58 +90,7 @@ void publishMyEvent()
 // This gives us:
 // A character array that consists of the event name
 // A character array that contains the data published in the event we're responding to.
-void handleSharedEvent(const char *event, const char *data)
-{
-    // Now we're getting ALL events published using "db2018/paired/"
-    // This includes events from this device.
-    // So we need to ignore any events that we sent.
-
-    // Let's check the event name
-    String eventName = String( event ); // convert to a string object
-    // This gives us access to a bunch of built in methods
-    // Like indexOf()
-    // Locates a character or String within another String.
-    // By default, searches from the beginning of the String,
-    // but can also start from a given index,
-    // allowing for the locating of all instances of the character or String.
-    // It Returns: The index of val within the String, or -1 if not found.
-
-    // We can use this to check if our event name contains the
-    // id of this device
-
-    String deviceID = System.deviceID();
-
-    // device id = 0123456789abcdef
-    // event = "diot/2019/paired/0123456789abcdef"
-
-    if( eventName.indexOf( deviceID ) != -1 ){
-      // if we get anything other than -1
-      // the event came from this device.
-      // so stop doing stuff
-      return;
-    }
-    // otherwise do your stuff to respond to
-    // the paired device here
-    //doSolenoid 5 times
-    for(int i =0; i<5;i++){
-        doSolenoid(500);
-        
-    }
-    //motorOn = true;
-
-}
-
-void doSolenoid(int rate){
-    //activate and devactivate the solenoid at a specified rate
-    digitalWrite(solPin, HIGH);
-    delay(rate);
-    digitalWrite(solPin, LOW);
-    delay(rate);
-}
-
 void mexicanFlag(const char *event, const char *data){
-    //publish a message to confirm the tweet triggered the mexican flag colors
-    Particle.publish("¡mexico!");
     delay(100);
     uint16_t i;
     //mexico flag colors
