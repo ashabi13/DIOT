@@ -9,10 +9,10 @@ long lastPublishedAt = 0;
 // this is the time delay before we should publish a new event
 // from this device
 int publishAfter = 1000;
-//setpins
-int solPin = D2;
+//define button Pin
 int butPin = D8;
 
+//define neopixel ring
 #define PIXEL_PIN D0
 #define PIXEL_COUNT 24
 #define PIXEL_TYPE SK6812RGBW
@@ -32,10 +32,11 @@ void setup()
   // this device or another (see publishMyEvent below)
   //Subscribe to a set of events published when an IFTTT widget is triggered by a tweet
   Particle.subscribe(  "ChenMutiatLama/2019/Group4/LamaAlFulaij", mexicanFlag );
-  pinMode(solPin, OUTPUT);
+  //button is readable
   pinMode(butPin, INPUT_PULLUP);  
+  //Initialize all pixels to 'off'
   ring.begin();
-  ring.show(); // Initialize all pixels to 'off'
+  ring.show();
 
 }
 
@@ -48,7 +49,7 @@ void loop()
         publishMyEvent();
     }
     // delay for a bit
-    
+    delay(200);
 }
 
 
@@ -93,26 +94,29 @@ void publishMyEvent()
 void mexicanFlag(const char *event, const char *data){
     delay(100);
     uint16_t i;
-    //mexico flag colors
+    //mexican flag colors
     uint32_t g = ring.Color(0, 255, 0,0);
     uint32_t w = ring.Color(255, 255, 255,0);
     uint32_t r = ring.Color(255, 0, 0,0);
-    //for loops for each light changes to the colors of the mexican flage
+    //for loops for each light changes to the colors of the mexican flag
+    //first green
     for(i=0; i< ring.numPixels(); i++) {
     ring.setPixelColor(i, g );
     	ring.show();
     	delay( 100 );
     }
+    //then white
     for(i=0; i< ring.numPixels(); i++) {
     ring.setPixelColor(i, w );
     	ring.show();
     	delay( 100 );
     }
+    //then red
     for(i=0; i< ring.numPixels(); i++) {
     ring.setPixelColor(i, r );
     	ring.show();
     	delay( 100 );
     }
-    
+    //wait a little at the end
     delay( 100 );
 }
