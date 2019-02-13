@@ -18,15 +18,15 @@ int butPin = D8;
 #define PIXEL_TYPE SK6812RGBW
 
 Adafruit_NeoPixel ring = Adafruit_NeoPixel(PIXEL_COUNT, PIXEL_PIN, PIXEL_TYPE);
-
-uint32_t w = ring.Color(255, 255, 255, 0);
-uint32_t r = ring.Color(255, 0, 0, 0);
-uint32_t y = ring.Color(255, 255, 0, 0);
-uint32_t g = ring.Color(0, 255, 0, 0);
-uint32_t c = ring.Color(0, 255, 255, 0);
-uint32_t b = ring.Color(0, 0, 255, 0);
-uint32_t m = ring.Color(255, 0, 255, 0);
-uint32_t k = ring.Color(0, 0, 0, 0);
+//GRB not RGB
+uint32_t w = ring.Color(255, 255, 255);
+uint32_t r = ring.Color(0, 255, 0);
+uint32_t y = ring.Color(255, 255, 0);
+uint32_t g = ring.Color(255, 0, 0);
+uint32_t c = ring.Color(0, 255, 255);
+uint32_t b = ring.Color(0, 0, 255);
+uint32_t m = ring.Color(255, 0, 255);
+uint32_t k = ring.Color(0, 0, 0);
 
 void setup()
 {
@@ -104,8 +104,29 @@ void react(const char *event, const char *data){
     
     String m = strstr(data, "mexic" );
     String mCaps = strstr(data, "Mexic" );
+    String r = strstr(data, "russia" );
+    String rCaps = strstr(data, "Russia" );
+    String c = strstr(data, "canad" );
+    String cCaps = strstr(data, "Canad" );
+    String i = strstr(data, "israel" );
+    String iCaps = strstr(data, "Israel" );
+    String v = strstr(data, "venezuela" );
+    String vCaps = strstr(data, "Venezuela" );
+    
     if(m!=NULL|| mCaps!=NULL){
         mexicanFlag();
+    }
+    else if(r!=NULL|| rCaps!=NULL){
+        russianFlag();
+    }
+    else if(c!=NULL|| cCaps!=NULL){
+        canadianFlag();
+    }
+    else if(i!=NULL|| iCaps!=NULL){
+        israeliFlag();
+    }
+    else if(v!=NULL|| vCaps!=NULL){
+        venezuelanFlag();
     }
     else{
         rainbow();
@@ -116,37 +137,31 @@ void react(const char *event, const char *data){
 
 void mexicanFlag(){
     delay(100);
-    uint32_t mex[] = {r,w,g};
-    flagColors(mex);
-    //mexican flag colors
-   /* {
-    //for loops for each light changes to the colors of the mexican flag
-    //first green
-    for(i=0; i< ring.numPixels(); i++) {
-		//change the color
-		ring.setPixelColor(i, g );
-    	//show the color
-		ring.show();
-    	delay( 100 );
-    }
-    //then white
-    for(i=0; i< ring.numPixels(); i++) {
-		//change the color
-		ring.setPixelColor(i, w );
-    	//show the color
-		ring.show();
-    	delay( 100 );
-    }
-    //then red
-    for(i=0; i< ring.numPixels(); i++) {
-    	//change the color
-		ring.setPixelColor(i, r );
-    	//show the color
-		ring.show();
-    	delay( 100 );
-    }
-    //wait a little at the end
-    delay( 100 );*/
+    uint32_t flag[] = {r,w,g};
+    flagColors(flag);
+}
+
+void canadianFlag(){
+    delay(100);
+    uint32_t flag[] = {r,w,r};
+    flagColors(flag);
+}
+
+void russianFlag(){
+    delay(100);
+    uint32_t flag[] = {w,b,r};
+    flagColors(flag);
+}
+void israeliFlag(){
+    delay(100);
+    uint32_t flag[] = {b,w,b};
+    flagColors(flag);
+}
+
+void venezuelanFlag(){
+    delay(100);
+    uint32_t flag[] = {y,b,r};
+    flagColors(flag);
 }
 //Shows a rainbow
 void rainbow(){
@@ -165,20 +180,13 @@ void rainbow(){
 //Flashes neopixel leaving all the lights off
 void turnoff(){
 
-    uint32_t onoff[] = {k, w, k};
-    for(int c=0; c<8; c++) {
-        for(uint16_t p=0; p< ring.numPixels(); p++) {
-        	//change the color
-    		ring.setPixelColor(p, onoff[c] );
-        	//show the color
-    		ring.show();
-        	delay( 10 );
-        }
-    }
+    uint32_t onoff[] = {k};
+    flagColors(onoff);
 }
 
 //then red
 void flagColors(uint32_t colors[]){
+    delay( 100 );
     for(int c=0; c< sizeof(colors); c++) {
         for(uint16_t p=0; p< ring.numPixels(); p++) {
         	//change the color
