@@ -57,18 +57,26 @@ void setup()
 
 void loop()
 {
-    int PIRvalue = analogRead(PIRPin);
-    Particle.publish("Move: ",(String)PIRvalue);
-    delay(200);
-    int souvalue = analogRead(souPin);
-    Particle.publish("Sound: " ,(String)souvalue);
-    delay(200);
     
+    int movement = analogRead(PIRPin);
+    int sound = analogRead(souPin);
+    //Particle.publish("Move: ",(String)PIRvalue);
+    //Particle.publish("Sound: " ,(String)souvalue);
+    if(movement>305){//if(movement>310){//if(movement>305){//if(movement>320){//if(movement>350){
+        publishEvent("SocialStopReact", "Move: "+(String)movement);
+        //delay(500);
+
+    }
+    if(sound>75){//if(sound>85){//if(sound>95){//if(sound>105){
+        publishEvent("SocialStopReact", "Sound: "+(String)sound);
+        //delay(500);
+    }
+    //if(PIRValue>){}
     // publish my event
     // if the button is pressed
     int butValue = digitalRead(butPin);
     if(butValue==LOW){
-        publishMyEvent();
+        //publishEvent("blah", "data");
     }
     
     // delay for a bit
@@ -76,7 +84,7 @@ void loop()
 }
 
 
-void publishMyEvent()
+void publishEvent(String eventID, String data)
 {
   // Remember that a device can publish at rate of about 1 event/sec,
   // with bursts of up to 4 allowed in 1 second.
@@ -94,13 +102,13 @@ void publishMyEvent()
       // ID of your device. It returns a String object of the device ID,
       // which is used to identify your device.
 
-      String eventName = "ChenMutiatLama/2019/Group4/" + System.deviceID();
+      String eventName = "ChenMutiatLama/2019/Group4/"+eventID + System.deviceID();
 
       // now we have something like "diot/2019/paired/0123456789abcdef"
       // and that corresponds to this devices info
 
       // then we share it out
-      Particle.publish( eventName, "data goes here" );
+      Particle.publish( eventName, data );
 
       // And this will get shared out to all devices using this code
 
