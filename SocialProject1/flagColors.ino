@@ -11,6 +11,8 @@ long lastPublishedAt = 0;
 int publishAfter = 1000;
 //define button Pin
 int butPin = D8;
+int PIRPin = A0;
+int souPin = A1;
 
 //define neopixel ring
 #define PIXEL_PIN D0
@@ -27,6 +29,8 @@ uint32_t c = ring.Color(0, 255, 255);
 uint32_t b = ring.Color(0, 0, 255);
 uint32_t m = ring.Color(255, 0, 255);
 uint32_t k = ring.Color(0, 0, 0);
+//a dark navy blue color to sub for black its called d for dark
+uint32_t d = ring.Color(2, 39, 27);
 
 void setup()
 {
@@ -42,7 +46,9 @@ void setup()
   //Subscribe to a set of events published when an IFTTT widget is triggered by a tweet
   Particle.subscribe(  "ChenMutiatLama/2019/Group4/LamaAlFulaij", react );
   //button is readable
-  pinMode(butPin, INPUT_PULLUP);  
+  pinMode(butPin, INPUT_PULLUP); 
+  pinMode(PIRPin, OUTPUT);
+  pinMode(souPin, OUTPUT);
   //Initialize all pixels to 'off'
   ring.begin();
   ring.show();
@@ -51,12 +57,20 @@ void setup()
 
 void loop()
 {
+    int PIRvalue = analogRead(PIRPin);
+    Particle.publish("Move: ",(String)PIRvalue);
+    delay(200);
+    int souvalue = analogRead(souPin);
+    Particle.publish("Sound: " ,(String)souvalue);
+    delay(200);
+    
     // publish my event
     // if the button is pressed
     int butValue = digitalRead(butPin);
     if(butValue==LOW){
         publishMyEvent();
     }
+    
     // delay for a bit
     delay(200);
 }
@@ -106,8 +120,8 @@ void react(const char *event, const char *data){
     String mCaps = strstr(data, "Mexic" );
     String r = strstr(data, "russia" );
     String rCaps = strstr(data, "Russia" );
-    String c = strstr(data, "canad" );
-    String cCaps = strstr(data, "Canad" );
+    String s = strstr(data, "syria" );
+    String sCaps = strstr(data, "Syria" );
     String i = strstr(data, "israel" );
     String iCaps = strstr(data, "Israel" );
     String v = strstr(data, "venezuela" );
@@ -119,8 +133,8 @@ void react(const char *event, const char *data){
     else if(r!=NULL|| rCaps!=NULL){
         russianFlag();
     }
-    else if(c!=NULL|| cCaps!=NULL){
-        canadianFlag();
+    else if(s!=NULL|| sCaps!=NULL){
+        syrianFlag();
     }
     else if(i!=NULL|| iCaps!=NULL){
         israeliFlag();
@@ -141,10 +155,15 @@ void mexicanFlag(){
     flagColors(flag);
 }
 
-void canadianFlag(){
+void syrianFlag(){
     delay(100);
-    uint32_t flag[] = {r,w,r};
-    flagColors(flag);
+    uint32_t flagA[] = {r,w};
+    uint32_t flagB[] = {g,w,g};
+    uint32_t flagC[] = {w,d};
+    flagColors(flagA);
+    flagColors(flagB);
+    flagColors(flagB);
+    
 }
 
 void russianFlag(){
