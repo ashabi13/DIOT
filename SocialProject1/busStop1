@@ -205,21 +205,21 @@ void rainbow(){
 //Flashes neopixel leaving all the lights off
 void turnoff(){
 
-    uint32_t onoff[] = {k,w,w,k};
+    uint32_t onoff[] = {k,k,k,k};
     flagColors(onoff);
 }
 
 void pulse(){
   for (int i=0; i < 225 ; i++) {
     for(int j=0; j<strip.numPixels(); j++) {
-      strip.setPixelColor(j, strip.Color(i+25,i,i+10)); // yellow with a little extra red to make it warmer 
+      strip.setPixelColor(j, strip.Color(i,i,i)); // yellow with a little extra red to make it warmer 
     }
     strip.show();
     delay(10);
   }
   for (int i = 225; i > 0; i--) {
     for(int j=0; j<strip.numPixels(); j++) {
-      strip.setPixelColor(j, strip.Color(i+15,i,i+10));
+      strip.setPixelColor(j, strip.Color(i,i,i));
     }
     strip.show();
     delay(10);
@@ -247,7 +247,6 @@ void checkReaction(String data){
     else{
         publishEvent("NoReaction", "");
     }
-    pulse();
     pulse();
     delay(1000);
     publishEvent("Motion", (String)motion);
