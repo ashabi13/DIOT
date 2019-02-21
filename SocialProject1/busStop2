@@ -60,7 +60,7 @@ void publishEvent(String eventID, String data)
 }
 
 
-/ Our event handler requires two bits of information
+// Our event handler requires two bits of information
 // This gives us:
 // A character array that consists of the event name
 // A character array that contains the data published in the event 
@@ -101,8 +101,6 @@ void action(const char *event, const char *data){
     else{
         rainbow();
     }
-    
-    checkReaction(data);
     turnoff();
     
 }
@@ -181,4 +179,3 @@ void flagColors(uint32_t colors[]){
         }
     }
 }
-
