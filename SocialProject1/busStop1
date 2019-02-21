@@ -1,45 +1,39 @@
 // This #include statement was automatically added by the Particle IDE.
 #include <neopixel.h>
-// This value will store the last time we published an event
-long lastPublishedAt = 0;
-// this is the time delay before we should publish a new event
-// from this device
-int publishAfter = 1000;
+
+//initialize the boolean variable for movement to false.
 bool motion = false;
+//set the speed of the lights to cycle through one 
 int lightSpeed = 100;
-//define button Pin
+//define pin for the PIR sensor
 int PIRpin = D2;
 //define neopixel ring
 #define PIXEL_PIN D3
 #define PIXEL_COUNT 29
 #define PIXEL_TYPE WS2812
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(PIXEL_COUNT, PIXEL_PIN, PIXEL_TYPE);
-//RGB
-uint32_t w = strip.Color(255, 255, 255);//, 0);
-uint32_t r = strip.Color(255, 0, 0);//, 0);
-uint32_t y = strip.Color(255, 255, 0);//, 0);
-uint32_t g = strip.Color(0, 255, 0);//,0);
-uint32_t c = strip.Color(0, 255, 255);//,0);
-uint32_t b = strip.Color(0, 0, 255);//,0);
-uint32_t m = strip.Color(255, 0, 255);//,0);
-uint32_t k = strip.Color(0, 0, 0);//, 0);
-//a dark navy blue color to sub for black its called d for dark
-//uint32_t d = strip.Color(39, 2, 27);
+//RGBW and CYMK colors as global variables
+uint32_t w = strip.Color(255, 255, 255);// white (all on)
+uint32_t r = strip.Color(255, 0, 0);    // red
+uint32_t y = strip.Color(255, 255, 0);  // yellow
+uint32_t g = strip.Color(0, 255, 0);    // green
+uint32_t c = strip.Color(0, 255, 255);  // cyan
+uint32_t b = strip.Color(0, 0, 255);    // blue
+uint32_t m = strip.Color(255, 0, 255);  // magenta (pink/purple)
+uint32_t k = strip.Color(0, 0, 0);      // black (all off)
 
 void setup()
 {
-  // We'll want to subscribe to an event thats fairly unique
-  // From the Particle Docs
-  // A subscription works like a prefix filter.
-  // Basically this will match any event that starts with 'db2018/paired/'
-  // This is a feature we'll useto figure out if our event comes from
-  // this device or another (see publishMyEvent below)
-  //Subscribe to a set of events published when an IFTTT widget is triggered by a tweet
-  Particle.subscribe(  "ChenMutiatLama/2019/Group4/LamaAlFulaij", action );
-  Particle.subscribe(  "ChenMutiatLama/2019/Group4/realDonaldTrump", action );
-  Particle.subscribe(  "ChenMutiatLama/2019/Group4/tweet", action );
+  /*Subscribe to a set of events published when an IFTTT widget is triggered by 
+  a tweeting. The first one is connected to the account of a teammate for demo 
+  purposes, the second one is connected to donaldTrump's twitter acound and the 
+  last one is independent of a username so any other account can be used.*/
+  Particle.subscribe("ChenMutiatLama/2019/Group4/LamaAlFulaij", action );
+  Particle.subscribe("ChenMutiatLama/2019/Group4/realDonaldTrump", action );
+  Particle.subscribe("ChenMutiatLama/2019/Group4/tweet", action );
   Particle.variable ("Motion",motion);
-  //button is readable
+  
+  //PIR is readable
   pinMode (PIRpin, INPUT_PULLDOWN);
  
   //Initialize all pixels to 'off'
@@ -50,71 +44,43 @@ void setup()
 void loop()
 {
     
-    //int movement = analogRead(PIRPin);
-    //int sound = analogRead(souPin);
-    //Particle.publish("Move: ",(String)PIRvalue);
-    //Particle.publish("Sound: " ,(String)souvalue);
+    //Stores the value output by the PIR based on whether or not
+    //It detects motion by reading the PIR pin.
     int currentMotion = digitalRead (PIRpin);
+    
+    //If there is motion the global variable motion is set to true
     if (currentMotion==HIGH){
       motion = true;
     }
+    //Otherwise set the global variable motion is set to false
     else{
       motion = false;
     }
     
-    //publishEvent("Motion", (String)motion);
-    //delay(1000);
-    //checkReaction("no");
-    //venezuelanFlag();
-    //delay (1000);
-    /*if(movement>305){//if(movement>310){//if(movement>305){//if(movement>320){//if(movement>350){
-        publishEvent("SocialStopReact", "Move: "+(String)movement);
-        //delay(500);
-    }
-    if(sound>75){//if(sound>85){//if(sound>95){//if(sound>105){
-        publishEvent("SocialStopReact", "Sound: "+(String)sound);
-        //delay(500);
-    }*/
-    //if(PIRValue>){}
-    // publish my event
-    // if the button is pressed
-    /*int butValue = digitalRead(butPin);
-    if(butValue==LOW){
-        //publishEvent("blah", "data");
-    }
-    
-    // delay for a bit
-    delay(200);*/
+    //wait a little
+    delay(100);
 }
 void publishEvent(String eventID, String data)
 {
-  // Remember that a device can publish at rate of about 1 event/sec,
-  // with bursts of up to 4 allowed in 1 second.
-  // Back to back burst of 4 messages will take 4 seconds to recover.
-  // So we want to limit the amount of publish events that happen.
-  // check that it's been 10 secondds since our last publish
-  //if( lastPublishedAt + publishAfter < millis() )
-  //{
-      // Remember our subscribe is matching  "db2018/paired/"
-      // We'll append the device id to get more specific
-      // about where the event came from
-      // System.deviceID() provides an easy way to extract the device
-      // ID of your device. It returns a String object of the device ID,
-      // which is used to identify your device.
-      String eventName = "ChenMutiatLama/2019/Group4/"+ eventID + "/" + System.deviceID();
-      // now we have something like "diot/2019/paired/0123456789abcdef"
-      // and that corresponds to this devices info
-      // then we share it out
-      Particle.publish( eventName, data );
-      // And this will get shared out to all devices using this code
-      // we just pubished so capture this.
-      lastPublishedAt = millis();
-  //}
+ /* Remember our subscribe is matching  "ChenMutiatLama/2019/Group4/"
+  We'll append the device id to get more specific about where the 
+  event came from and an event ID to specify what the event is 
+  supposed to trigger. 
+  System.deviceID() provides an easy way to extract the device ID of 
+  your device. It returns a String object of the device ID, which is 
+  used to identify your device.*/
+  String eventName = "ChenMutiatLama/2019/Group4/"+ eventID + "/" + System.deviceID();
+  // now we have something like "diot/2019/paired/0123456789abcdef"
+  // and that corresponds to this devices info
+  // then we publish it
+  Particle.publish( eventName, data );
 }
-// Our event handlde requires two bits of information
+
+// Our event handler requires two bits of information
 // This gives us:
 // A character array that consists of the event name
-// A character array that contains the data published in the event we're responding to.
+// A character array that contains the data published in the event 
+// we're responding to.
 void action(const char *event, const char *data){
     //Particle.publish("acting");
     String m = strstr(data, "mexic" );
@@ -127,42 +93,46 @@ void action(const char *event, const char *data){
     String iCaps = strstr(data, "Israel" );
     String v = strstr(data, "venezuela" );
     String vCaps = strstr(data, "Venezuela" );
+    String c = strstr(data, "chin" );
+    String cCaps = strstr(data, "Chin" );
     String country = "no";
     if(m!=NULL|| mCaps!=NULL){
         mexicanFlag();
-        country = "mexico";
+     
     }
     else if(r!=NULL|| rCaps!=NULL){
         russianFlag();
-        country = "russia";
     }
     else if(s!=NULL|| sCaps!=NULL){
         syrianFlag();
-        country = "syria";
     }
     else if(i!=NULL|| iCaps!=NULL){
         israeliFlag();
-        country = "israel";
     }
     else if(v!=NULL|| vCaps!=NULL){
         venezuelanFlag();
-        country = "venezuela";
+    }
+    else if(c!=NULL|| cCaps!=NULL){
+        chineseFlag();
     }
     else{
         rainbow();
     }
     
-    checkReaction(data);//+country);
+    checkReaction(data);
     turnoff();
     
 }
 
+// Call the flag colors function for the country or people 
+// from the following countries. Using predefinied lists of colors
+//mexico
 void mexicanFlag(){
     delay(100);
     uint32_t flag[] = {r,w,g,k};
     flagColors(flag);
 }
-
+//syria
 void syrianFlag(){
     delay(100);
     uint32_t flagA[] = {r,w,g,w};
@@ -171,21 +141,28 @@ void syrianFlag(){
     flagColors(flagB);
     
 }
-
+//russia
 void russianFlag(){
     delay(100);
     uint32_t flag[] = {w,b,r,k};
     flagColors(flag);
 }
+//israel
 void israeliFlag(){
     delay(100);
     uint32_t flag[] = {b,w,b,k};
     flagColors(flag);
 }
-
+//venezuela
 void venezuelanFlag(){
     delay(100);
     uint32_t flag[] = {y,b,r,k};
+    flagColors(flag);
+}
+//china
+void chineseFlag(){
+    delay(100);
+    uint32_t flag[] = {r,r,y,r};
     flagColors(flag);
 }
 //Shows a rainbow
@@ -198,36 +175,45 @@ void rainbow(){
     		strip.setPixelColor(p, rainbow[c] );
         	//show the color
     		strip.show();
-        	delay( 100 );
+        	delay( lightSpeed );
         }
     }
 }
 //Flashes neopixel leaving all the lights off
 void turnoff(){
-
+    //run through flag colors with all colors set to off
     uint32_t onoff[] = {k,k,k,k};
     flagColors(onoff);
 }
-
+//makes every neopixel breath once
 void pulse(){
+  //ascending from 0 to 225
   for (int i=0; i < 225 ; i++) {
+    //cycle through every pixel
     for(int j=0; j<strip.numPixels(); j++) {
-      strip.setPixelColor(j, strip.Color(i,i,i)); // yellow with a little extra red to make it warmer 
+      //ascending through shades of white
+      strip.setPixelColor(j, strip.Color(i,i,i)); 
     }
+    //show the change
     strip.show();
+    //wait a bit
     delay(10);
   }
+  //descending from 225 to 0
   for (int i = 225; i > 0; i--) {
+    //cycle through every pixel
     for(int j=0; j<strip.numPixels(); j++) {
+      //descending through shades of white
       strip.setPixelColor(j, strip.Color(i,i,i));
     }
+    //show the change
     strip.show();
+    //wait a bit
     delay(10);
   }
 }
-//then red
+//Takes a list of up to four colors and shows them on the neopixels
 void flagColors(uint32_t colors[]){
-    //delay( lightSpeed );
     for(int c=0; c< sizeof(colors); c++) {
         for(uint16_t p=0; p< strip.numPixels(); p++) {
             //change the color
@@ -240,15 +226,27 @@ void flagColors(uint32_t colors[]){
 }
 void checkReaction(String data){
     
-    delay(1000);
+    delay(3000);
     if(motion==true){
+        //Publish an event to indicate that there was a motion 
+        //based reaction and the first bus stop. The tweet data
+        //is published as the data, while "reaction" is the 
+        //event name
         publishEvent("Reaction", data);
     }
     else{
+        //Publish an event to indicate that there was not a 
+        //motion based reaction and the first bus stop and there 
+        //is no data in the event 
         publishEvent("NoReaction", "");
     }
+    //pulse the lights onece
     pulse();
+    //take a pause
     delay(1000);
+    //publish the motion variable
+    //this is more so to allow the developer or commissioned 
+    //entity to know when the stop is triggered and if there was a reaction.
     publishEvent("Motion", (String)motion);
     
     
